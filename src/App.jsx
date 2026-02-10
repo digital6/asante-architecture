@@ -1,0 +1,498 @@
+import React, { useState } from 'react';
+
+const AsanteArchitectureDiagram = () => {
+  const [hoveredService, setHoveredService] = useState(null);
+
+  // AWS Service colors
+  const awsColors = {
+    compute: '#FF9900',
+    database: '#3B48CC',
+    ai: '#01A88D',
+    security: '#DD344C',
+    networking: '#8C4FFF',
+    storage: '#7AA116',
+    integration: '#E7157B',
+    management: '#E7157B',
+    marketplace: '#232F3E'
+  };
+
+  const ServiceBox = ({ x, y, width, height, color, icon, label, sublabel }) => (
+    <g 
+      className="cursor-pointer transition-all duration-300"
+      onMouseEnter={() => setHoveredService(label)}
+      onMouseLeave={() => setHoveredService(null)}
+      style={{ filter: hoveredService === label ? 'brightness(1.1)' : 'none' }}
+    >
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        rx="6"
+        fill={`${color}15`}
+        stroke={color}
+        strokeWidth="2"
+        className={`transition-all duration-300 ${hoveredService === label ? 'stroke-[3]' : ''}`}
+      />
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height="4"
+        rx="2"
+        fill={color}
+      />
+      <text x={x + width/2} y={y + 28} textAnchor="middle" fill="#1e293b" fontSize="11" fontWeight="600">{icon}</text>
+      <text x={x + width/2} y={y + 46} textAnchor="middle" fill="#1e293b" fontSize="10" fontWeight="600">{label}</text>
+      {sublabel && <text x={x + width/2} y={y + 60} textAnchor="middle" fill="#64748b" fontSize="8">{sublabel}</text>}
+    </g>
+  );
+
+  const Arrow = ({ x1, y1, x2, y2, color = "#94a3b8", dashed = false }) => {
+    return (
+      <g>
+        <defs>
+          <marker id={`arrow-${color.replace('#','')}`} markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill={color} />
+          </marker>
+        </defs>
+        <line
+          x1={x1} y1={y1} x2={x2} y2={y2}
+          stroke={color}
+          strokeWidth="1.5"
+          strokeDasharray={dashed ? "4,4" : "none"}
+          markerEnd={`url(#arrow-${color.replace('#','')})`}
+        />
+      </g>
+    );
+  };
+
+  const SectionHeader = ({ x, y, width, label, color, description }) => (
+    <g>
+      <rect x={x} y={y} width={width} height="26" rx="4" fill={color} />
+      <text x={x + 10} y={y + 17} fill="white" fontSize="11" fontWeight="700">{label}</text>
+      {description && <text x={x + width - 10} y={y + 16} textAnchor="end" fill="rgba(255,255,255,0.8)" fontSize="8">{description}</text>}
+    </g>
+  );
+
+  const ZoneBox = ({ x, y, width, height, label, color, dashed = false }) => (
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        rx="8"
+        fill={`${color}08`}
+        stroke={color}
+        strokeWidth="1.5"
+        strokeDasharray={dashed ? "6,4" : "none"}
+      />
+      <rect x={x} y={y} width="100" height="20" rx="4" fill={color} />
+      <text x={x + 8} y={y + 14} fill="white" fontSize="9" fontWeight="600">{label}</text>
+    </g>
+  );
+
+  return (
+    <div className="w-full min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+      {/* Header */}
+      <div className="max-w-[1400px] mx-auto mb-6">
+        <div className="flex items-center gap-4 mb-2">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center">
+            <span className="text-2xl">🤖</span>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-white tracking-tight">Asante Generative AI</h1>
+            <p className="text-slate-400 text-sm">AWS Architecture for Marketplace SaaS Product</p>
+          </div>
+        </div>
+        <div className="flex gap-3 mt-4 flex-wrap">
+          {[
+            { label: 'AI/ML Services', color: awsColors.ai },
+            { label: 'Compute', color: awsColors.compute },
+            { label: 'Database', color: awsColors.database },
+            { label: 'Security', color: awsColors.security },
+            { label: 'Networking', color: awsColors.networking },
+            { label: 'Integration', color: awsColors.integration },
+          ].map((item) => (
+            <div key={item.label} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-700/50 border border-slate-600">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+              <span className="text-xs text-slate-300">{item.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Diagram */}
+      <div className="max-w-[1400px] mx-auto bg-white rounded-2xl shadow-2xl p-4 overflow-x-auto">
+        <svg viewBox="0 0 1300 1050" className="w-full" style={{ minWidth: '1200px' }}>
+          {/* Background Grid */}
+          <defs>
+            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" strokeWidth="0.5"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)"/>
+
+          {/* Title */}
+          <text x="650" y="30" textAnchor="middle" fontSize="18" fontWeight="800" fill="#0f172a">
+            Asante Generative AI - AWS SaaS Architecture
+          </text>
+          <text x="650" y="48" textAnchor="middle" fontSize="10" fill="#64748b">
+            Multi-Tenant Platform with Voice, Chat, RAG & Workflow Capabilities | AWS Marketplace via Tackle.io
+          </text>
+
+          {/* ============== CUSTOMER ZONE ============== */}
+          <ZoneBox x={20} y={65} width={1260} height={120} label="Customers" color="#6366f1" />
+          
+          {/* Customer Types */}
+          <g transform="translate(50, 95)">
+            <rect x="0" y="0" width="110" height="70" rx="8" fill="#f1f5f9" stroke="#e2e8f0" strokeWidth="1"/>
+            <text x="55" y="25" textAnchor="middle" fontSize="20">📱</text>
+            <text x="55" y="45" textAnchor="middle" fontSize="9" fontWeight="600" fill="#334155">Web/Mobile Users</text>
+            <text x="55" y="58" textAnchor="middle" fontSize="7" fill="#94a3b8">Chat Interface</text>
+          </g>
+          
+          <g transform="translate(180, 95)">
+            <rect x="0" y="0" width="110" height="70" rx="8" fill="#f1f5f9" stroke="#e2e8f0" strokeWidth="1"/>
+            <text x="55" y="25" textAnchor="middle" fontSize="20">📞</text>
+            <text x="55" y="45" textAnchor="middle" fontSize="9" fontWeight="600" fill="#334155">Voice Callers</text>
+            <text x="55" y="58" textAnchor="middle" fontSize="7" fill="#94a3b8">Phone/SIP</text>
+          </g>
+          
+          <g transform="translate(310, 95)">
+            <rect x="0" y="0" width="110" height="70" rx="8" fill="#f1f5f9" stroke="#e2e8f0" strokeWidth="1"/>
+            <text x="55" y="25" textAnchor="middle" fontSize="20">💬</text>
+            <text x="55" y="45" textAnchor="middle" fontSize="9" fontWeight="600" fill="#334155">Messaging</text>
+            <text x="55" y="58" textAnchor="middle" fontSize="7" fill="#94a3b8">Slack/Teams/SMS</text>
+          </g>
+
+          <g transform="translate(440, 95)">
+            <rect x="0" y="0" width="110" height="70" rx="8" fill="#f1f5f9" stroke="#e2e8f0" strokeWidth="1"/>
+            <text x="55" y="25" textAnchor="middle" fontSize="20">🔌</text>
+            <text x="55" y="45" textAnchor="middle" fontSize="9" fontWeight="600" fill="#334155">API Consumers</text>
+            <text x="55" y="58" textAnchor="middle" fontSize="7" fill="#94a3b8">REST/WebSocket</text>
+          </g>
+
+          {/* Admin Portal */}
+          <g transform="translate(900, 95)">
+            <rect x="0" y="0" width="160" height="70" rx="8" fill="#dbeafe" stroke="#3b82f6" strokeWidth="2"/>
+            <text x="80" y="25" textAnchor="middle" fontSize="20">👨‍💼</text>
+            <text x="80" y="45" textAnchor="middle" fontSize="9" fontWeight="600" fill="#1e40af">Admin Portal</text>
+            <text x="80" y="58" textAnchor="middle" fontSize="7" fill="#3b82f6">Agent Config & Analytics</text>
+          </g>
+
+          {/* AWS Marketplace Badge */}
+          <g transform="translate(1100, 95)">
+            <rect x="0" y="0" width="150" height="70" rx="8" fill="#232F3E" stroke="#FF9900" strokeWidth="2"/>
+            <text x="75" y="22" textAnchor="middle" fontSize="9" fontWeight="600" fill="#FF9900">AWS Marketplace</text>
+            <text x="75" y="38" textAnchor="middle" fontSize="8" fill="white">via Tackle.io</text>
+            <text x="75" y="52" textAnchor="middle" fontSize="7" fill="#94a3b8">Subscription & Billing</text>
+            <text x="75" y="64" textAnchor="middle" fontSize="7" fill="#94a3b8">Metering & Entitlements</text>
+          </g>
+
+          {/* ============== EDGE & CDN LAYER ============== */}
+          <SectionHeader x={20} y={195} width={1260} label="Edge & Content Delivery" color="#8C4FFF" description="Global Distribution & Security" />
+          
+          <ServiceBox x={60} y={230} width={130} height={65} color={awsColors.networking} 
+            icon="🌐" label="Amazon CloudFront" sublabel="CDN & Edge Caching" />
+          
+          <ServiceBox x={220} y={230} width={130} height={65} color={awsColors.security} 
+            icon="🛡️" label="AWS WAF" sublabel="Web App Firewall" />
+          
+          <ServiceBox x={380} y={230} width={130} height={65} color={awsColors.security} 
+            icon="🔒" label="AWS Shield" sublabel="DDoS Protection" />
+
+          <ServiceBox x={540} y={230} width={140} height={65} color={awsColors.networking} 
+            icon="📡" label="Route 53" sublabel="DNS & Health Checks" />
+
+          <ServiceBox x={710} y={230} width={150} height={65} color={awsColors.security} 
+            icon="🔐" label="ACM" sublabel="SSL/TLS Certificates" />
+
+          {/* ============== API & AUTHENTICATION LAYER ============== */}
+          <SectionHeader x={20} y={310} width={1260} label="API Gateway & Authentication" color="#E7157B" description="Request Routing & Identity" />
+
+          <ServiceBox x={60} y={345} width={160} height={70} color={awsColors.integration} 
+            icon="🚪" label="API Gateway" sublabel="REST & WebSocket APIs" />
+          
+          <ServiceBox x={250} y={345} width={160} height={70} color={awsColors.integration} 
+            icon="⚡" label="AppSync" sublabel="GraphQL Real-time" />
+
+          <ServiceBox x={440} y={345} width={180} height={70} color={awsColors.security} 
+            icon="🔑" label="Amazon Cognito" sublabel="User Pools & Identity Federation" />
+          
+          {/* SSO Options */}
+          <g transform="translate(640, 355)">
+            <rect x="0" y="0" width="200" height="50" rx="6" fill="#fef3c7" stroke="#f59e0b" strokeWidth="1"/>
+            <text x="100" y="18" textAnchor="middle" fontSize="8" fontWeight="600" fill="#92400e">SSO Integrations</text>
+            <text x="100" y="32" textAnchor="middle" fontSize="7" fill="#78350f">Google Workspace | Microsoft 365</text>
+            <text x="100" y="44" textAnchor="middle" fontSize="7" fill="#78350f">SAML 2.0 | OIDC</text>
+          </g>
+
+          <ServiceBox x={870} y={345} width={160} height={70} color={awsColors.security} 
+            icon="🏛️" label="IAM Identity Center" sublabel="Enterprise SSO" />
+
+          <ServiceBox x={1060} y={345} width={180} height={70} color={awsColors.security} 
+            icon="🗝️" label="Secrets Manager" sublabel="API Keys & Credentials" />
+
+          {/* ============== VOICE CHANNEL ============== */}
+          <ZoneBox x={20} y={430} width={420} height={200} label="Voice Channel" color="#f97316" />
+          
+          <ServiceBox x={40} y={465} width={180} height={75} color={awsColors.ai} 
+            icon="🎙️" label="Amazon Nova Sonic V2" sublabel="Speech-to-Speech AI Model" />
+          
+          <ServiceBox x={240} y={465} width={180} height={75} color={awsColors.compute} 
+            icon="📞" label="Amazon Connect" sublabel="Contact Center & Telephony" />
+
+          <ServiceBox x={40} y={555} width={120} height={60} color={awsColors.compute} 
+            icon="🔀" label="Kinesis" sublabel="Audio Streaming" />
+          
+          <ServiceBox x={180} y={555} width={120} height={60} color={awsColors.compute} 
+            icon="📊" label="Contact Lens" sublabel="Call Analytics" />
+          
+          <ServiceBox x={320} y={555} width={100} height={60} color={awsColors.integration} 
+            icon="⚡" label="WebSocket" sublabel="Real-time" />
+
+          {/* ============== CHAT & MESSAGING CHANNEL ============== */}
+          <ZoneBox x={450} y={430} width={400} height={200} label="Chat & Messaging" color="#06b6d4" />
+          
+          <ServiceBox x={470} y={465} width={120} height={65} color={awsColors.compute} 
+            icon="💬" label="Lambda" sublabel="Chat Handler" />
+          
+          <ServiceBox x={610} y={465} width={120} height={65} color={awsColors.integration} 
+            icon="🔗" label="EventBridge" sublabel="Event Router" />
+          
+          <ServiceBox x={750} y={465} width={80} height={65} color={awsColors.database} 
+            icon="📨" label="SQS" sublabel="Message Queue" />
+
+          <ServiceBox x={470} y={545} width={140} height={65} color={awsColors.database} 
+            icon="⚡" label="ElastiCache" sublabel="Redis Session Store" />
+          
+          <ServiceBox x={630} y={545} width={100} height={65} color={awsColors.database} 
+            icon="📱" label="SNS" sublabel="Push Notify" />
+          
+          <ServiceBox x={750} y={545} width={80} height={65} color={awsColors.integration} 
+            icon="🔄" label="IoT Core" sublabel="Real-time" />
+
+          {/* ============== EXTERNAL INTEGRATIONS ============== */}
+          <ZoneBox x={860} y={430} width={420} height={200} label="External Integrations" color="#8b5cf6" dashed={true} />
+          
+          <g transform="translate(880, 465)">
+            <rect x="0" y="0" width="100" height="55" rx="6" fill="#e0f2fe" stroke="#0284c7" strokeWidth="1"/>
+            <text x="50" y="22" textAnchor="middle" fontSize="16">☁️</text>
+            <text x="50" y="38" textAnchor="middle" fontSize="8" fontWeight="600" fill="#0369a1">Salesforce</text>
+            <text x="50" y="50" textAnchor="middle" fontSize="6" fill="#0284c7">CRM Integration</text>
+          </g>
+          
+          <g transform="translate(995, 465)">
+            <rect x="0" y="0" width="100" height="55" rx="6" fill="#dcfce7" stroke="#16a34a" strokeWidth="1"/>
+            <text x="50" y="22" textAnchor="middle" fontSize="16">📅</text>
+            <text x="50" y="38" textAnchor="middle" fontSize="8" fontWeight="600" fill="#15803d">Calendly</text>
+            <text x="50" y="50" textAnchor="middle" fontSize="6" fill="#16a34a">Scheduling</text>
+          </g>
+          
+          <g transform="translate(1110, 465)">
+            <rect x="0" y="0" width="100" height="55" rx="6" fill="#fef3c7" stroke="#ca8a04" strokeWidth="1"/>
+            <text x="50" y="22" textAnchor="middle" fontSize="16">📁</text>
+            <text x="50" y="38" textAnchor="middle" fontSize="8" fontWeight="600" fill="#a16207">SharePoint</text>
+            <text x="50" y="50" textAnchor="middle" fontSize="6" fill="#ca8a04">Knowledge Base</text>
+          </g>
+
+          <g transform="translate(880, 535)">
+            <rect x="0" y="0" width="100" height="55" rx="6" fill="#fce7f3" stroke="#db2777" strokeWidth="1"/>
+            <text x="50" y="22" textAnchor="middle" fontSize="16">💼</text>
+            <text x="50" y="38" textAnchor="middle" fontSize="8" fontWeight="600" fill="#be185d">ServiceNow</text>
+            <text x="50" y="50" textAnchor="middle" fontSize="6" fill="#db2777">ITSM</text>
+          </g>
+          
+          <g transform="translate(995, 535)">
+            <rect x="0" y="0" width="100" height="55" rx="6" fill="#f3e8ff" stroke="#9333ea" strokeWidth="1"/>
+            <text x="50" y="22" textAnchor="middle" fontSize="16">📧</text>
+            <text x="50" y="38" textAnchor="middle" fontSize="8" fontWeight="600" fill="#7e22ce">Slack/Teams</text>
+            <text x="50" y="50" textAnchor="middle" fontSize="6" fill="#9333ea">Messaging</text>
+          </g>
+          
+          <g transform="translate(1110, 535)">
+            <rect x="0" y="0" width="150" height="55" rx="6" fill="#f1f5f9" stroke="#64748b" strokeWidth="1" strokeDasharray="4,2"/>
+            <text x="75" y="22" textAnchor="middle" fontSize="16">🔌</text>
+            <text x="75" y="38" textAnchor="middle" fontSize="8" fontWeight="600" fill="#475569">Custom APIs</text>
+            <text x="75" y="50" textAnchor="middle" fontSize="6" fill="#64748b">AppFlow / Lambda</text>
+          </g>
+
+          {/* ============== AI/ML CORE ============== */}
+          <SectionHeader x={20} y={645} width={850} label="🧠 AI/ML Core - Amazon Bedrock & RAG" color="#01A88D" description="Foundation Models & Knowledge Retrieval" />
+
+          <ServiceBox x={40} y={685} width={180} height={80} color={awsColors.ai} 
+            icon="🧠" label="Amazon Bedrock" sublabel="Foundation Models (Claude, Titan)" />
+          
+          <ServiceBox x={240} y={685} width={180} height={80} color={awsColors.ai} 
+            icon="📚" label="Bedrock Knowledge Bases" sublabel="RAG Orchestration" />
+          
+          <ServiceBox x={440} y={685} width={160} height={80} color={awsColors.ai} 
+            icon="🔧" label="Bedrock Agents" sublabel="Tool Use & Actions" />
+
+          <ServiceBox x={620} y={685} width={120} height={80} color={awsColors.ai} 
+            icon="🛡️" label="Guardrails" sublabel="Content Filters" />
+
+          <ServiceBox x={760} y={685} width={100} height={80} color={awsColors.ai} 
+            icon="📊" label="Model Eval" sublabel="Performance" />
+
+          {/* Vector Database & Storage */}
+          <ZoneBox x={880} y={645} width={400} height={125} label="Vector & Data Storage" color="#3B48CC" />
+          
+          <ServiceBox x={900} y={685} width={150} height={70} color={awsColors.storage} 
+            icon="🔍" label="S3 Vectors" sublabel="Cost-Effective Vector Store" />
+          
+          <ServiceBox x={1070} y={685} width={100} height={70} color={awsColors.database} 
+            icon="📄" label="Aurora DSQL" sublabel="Serverless SQL" />
+          
+          <ServiceBox x={1185} y={685} width={80} height={70} color={awsColors.storage} 
+            icon="🪣" label="S3" sublabel="Documents" />
+
+          {/* ============== WORKFLOW & COMPUTE ============== */}
+          <SectionHeader x={20} y={785} width={620} label="⚡ Workflow Orchestration & Compute" color="#FF9900" description="Serverless Processing" />
+
+          <ServiceBox x={40} y={825} width={150} height={70} color={awsColors.compute} 
+            icon="🔄" label="Step Functions" sublabel="Workflow Engine" />
+          
+          <ServiceBox x={210} y={825} width={130} height={70} color={awsColors.compute} 
+            icon="λ" label="Lambda" sublabel="Serverless Functions" />
+          
+          <ServiceBox x={360} y={825} width={130} height={70} color={awsColors.compute} 
+            icon="🐳" label="ECS Fargate" sublabel="Container Tasks" />
+          
+          <ServiceBox x={510} y={825} width={120} height={70} color={awsColors.integration} 
+            icon="🔗" label="AppFlow" sublabel="SaaS Connector" />
+
+          {/* ============== DATA & ANALYTICS ============== */}
+          <SectionHeader x={660} y={785} width={620} label="📊 Data, Analytics & Observability" color="#3B48CC" description="Insights & Monitoring" />
+
+          <ServiceBox x={680} y={825} width={120} height={70} color={awsColors.database} 
+            icon="🏢" label="DynamoDB" sublabel="Conversations" />
+          
+          <ServiceBox x={820} y={825} width={120} height={70} color={awsColors.database} 
+            icon="📈" label="Timestream" sublabel="Metrics" />
+          
+          <ServiceBox x={960} y={825} width={130} height={70} color={awsColors.management} 
+            icon="📊" label="QuickSight" sublabel="BI Dashboards" />
+
+          <ServiceBox x={1110} y={825} width={130} height={70} color={awsColors.management} 
+            icon="🔭" label="CloudWatch" sublabel="Logs & Alarms" />
+
+          {/* ============== SECURITY & GOVERNANCE ============== */}
+          <SectionHeader x={20} y={910} width={1260} label="🔒 Security, Compliance & Cost Management" color="#DD344C" description="Enterprise-Grade Protection" />
+
+          <ServiceBox x={40} y={950} width={130} height={70} color={awsColors.security} 
+            icon="🔐" label="KMS" sublabel="Encryption Keys" />
+          
+          <ServiceBox x={190} y={950} width={130} height={70} color={awsColors.security} 
+            icon="📋" label="CloudTrail" sublabel="Audit Logs" />
+          
+          <ServiceBox x={340} y={950} width={130} height={70} color={awsColors.security} 
+            icon="🛡️" label="Security Hub" sublabel="Posture Mgmt" />
+          
+          <ServiceBox x={490} y={950} width={130} height={70} color={awsColors.security} 
+            icon="🔍" label="GuardDuty" sublabel="Threat Detection" />
+
+          <ServiceBox x={640} y={950} width={130} height={70} color={awsColors.security} 
+            icon="📜" label="Config" sublabel="Compliance" />
+
+          <ServiceBox x={790} y={950} width={140} height={70} color={awsColors.management} 
+            icon="🏷️" label="Resource Groups" sublabel="Tenant Isolation" />
+
+          <ServiceBox x={950} y={950} width={140} height={70} color={awsColors.compute} 
+            icon="💰" label="Cost Explorer" sublabel="Usage Analysis" />
+
+          <ServiceBox x={1110} y={950} width={140} height={70} color={awsColors.compute} 
+            icon="📉" label="Budgets" sublabel="Cost Alerts" />
+
+          {/* ============== DATA FLOW ARROWS ============== */}
+          
+          {/* Customer to Edge */}
+          <Arrow x1={105} y1={165} x2={105} y2={225} color="#6366f1" />
+          <Arrow x1={235} y1={165} x2={235} y2={225} color="#6366f1" />
+          <Arrow x1={365} y1={165} x2={365} y2={225} color="#6366f1" />
+          
+          {/* Edge to API */}
+          <Arrow x1={125} y1={295} x2={125} y2={340} color="#8C4FFF" />
+          <Arrow x1={285} y1={295} x2={285} y2={340} color="#8C4FFF" />
+          
+          {/* API to Channels */}
+          <Arrow x1={140} y1={415} x2={100} y2={460} color="#E7157B" />
+          <Arrow x1={330} y1={415} x2={530} y2={460} color="#E7157B" />
+          
+          {/* Voice Channel to AI */}
+          <Arrow x1={105} y1={610} x2={130} y2={680} color="#f97316" />
+          
+          {/* Chat Channel to AI */}
+          <Arrow x1={530} y1={610} x2={330} y2={680} color="#06b6d4" />
+          
+          {/* AI to Vector DB */}
+          <Arrow x1={860} y1={725} x2={895} y2={725} color="#01A88D" />
+          
+          {/* AI to Workflow */}
+          <Arrow x1={520} y1={765} x2={520} y2={820} color="#01A88D" />
+          <Arrow x1={130} y1={765} x2={130} y2={820} color="#FF9900" />
+          
+          {/* Workflow to Data */}
+          <Arrow x1={640} y1={860} x2={675} y2={860} color="#FF9900" />
+          
+          {/* External Integrations connections */}
+          <Arrow x1={850} y1={510} x2={600} y2={510} color="#8b5cf6" dashed={true} />
+          
+          {/* Marketplace to Security */}
+          <Arrow x1={1175} y1={165} x2={1175} y2={340} color="#FF9900" dashed={true} />
+
+          {/* Multi-tenant callout */}
+          <g transform="translate(1000, 85)">
+            <rect x="0" y="0" width="85" height="25" rx="12" fill="#10b981" />
+            <text x="42" y="17" textAnchor="middle" fontSize="8" fontWeight="600" fill="white">Multi-Tenant</text>
+          </g>
+
+        </svg>
+      </div>
+
+      {/* Footer Legend */}
+      <div className="max-w-[1400px] mx-auto mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
+          <h3 className="text-sm font-semibold text-white mb-2">🎯 Key Features</h3>
+          <ul className="text-xs text-slate-400 space-y-1">
+            <li>• Voice AI with Nova Sonic V2 (Speech-to-Speech)</li>
+            <li>• Chat/RAG with Bedrock Knowledge Bases</li>
+            <li>• Workflow automation via Step Functions</li>
+            <li>• External SaaS integrations (Salesforce, Calendly, SharePoint)</li>
+          </ul>
+        </div>
+        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
+          <h3 className="text-sm font-semibold text-white mb-2">🔐 Security Highlights</h3>
+          <ul className="text-xs text-slate-400 space-y-1">
+            <li>• End-to-end encryption with KMS</li>
+            <li>• SSO via Cognito (Google/Microsoft/SAML)</li>
+            <li>• WAF & Shield for DDoS protection</li>
+            <li>• Tenant isolation with resource groups</li>
+          </ul>
+        </div>
+        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
+          <h3 className="text-sm font-semibold text-white mb-2">💰 Cost Optimization</h3>
+          <ul className="text-xs text-slate-400 space-y-1">
+            <li>• Serverless-first (Lambda, Fargate, Aurora DSQL)</li>
+            <li>• S3 Vectors for low-cost vector storage</li>
+            <li>• Pay-per-use Bedrock model invocations</li>
+            <li>• Nova Sonic V2 - efficient speech-to-speech</li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="max-w-[1400px] mx-auto mt-6 text-center text-slate-500 text-xs">
+        <p>Asante Generative AI • Built on AWS • Available on AWS Marketplace via Tackle.io</p>
+      </div>
+    </div>
+  );
+};
+
+function App() {
+  return <AsanteArchitectureDiagram />;
+}
+
+export default App;
